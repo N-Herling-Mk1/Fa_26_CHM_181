@@ -1,0 +1,30 @@
+:root {
+  --ink: #1d2125; --ink-2: #4a5056; --muted: #737a81; --line: #d6dce3; --bg: #f5f7f9;
+  --accent: #006fbf; --accent-2: #e6f1fa;
+  --font: "Lato", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.5; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+.hero { background: #fff; border-bottom: 1px solid var(--line); padding: 44px 0 30px; margin-bottom: 28px; }
+.kicker { margin: 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.hero h1 { margin: 6px 0 8px; font-size: 34px; }
+.lede { margin: 0; color: var(--ink-2); max-width: 620px; }
+.module { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; margin-bottom: 18px; }
+.mod-head { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
+.mod-head .num { font-size: 13px; font-weight: 700; color: var(--accent); background: var(--accent-2); border-radius: 6px; padding: 6px 9px; }
+.mod-head h2 { margin: 0; font-size: 20px; }
+.mod-head p { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.item { display: flex; flex-direction: column; gap: 3px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; text-decoration: none; color: inherit; position: relative; }
+.item .kind { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.item .title { font-size: 16px; font-weight: 700; }
+.item .meta { font-size: 13px; color: var(--ink-2); }
+.item .go { margin-top: 6px; font-size: 14px; color: var(--accent); font-weight: 700; }
+.item.live { border-color: #9cc3e6; background: #fbfdff; transition: box-shadow .15s, transform .15s; }
+.item.live:hover, .item.live:focus-visible { box-shadow: 0 2px 10px rgba(0, 80, 160, .12); transform: translateY(-1px); outline: none; }
+.item.live:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.item.soon { background: #f7f8fa; color: var(--muted); cursor: not-allowed; }
+.item.soon .title { color: var(--ink-2); }
+.foot { color: var(--muted); font-size: 13px; padding-top: 10px; padding-bottom: 40px; }
+code { background: #eef1f4; padding: 1px 5px; border-radius: 3px; }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CHEM 181 · Study Hub</title>
+  <link rel="stylesheet" href="assets/css/hub.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="kicker">CHEM 181 · General Chemistry I</p>
+      <h1>Study Hub</h1>
+      <p class="lede">Quizzes and chapter notes, one chapter at a time. Live items are linked; the rest are placeholders until they are built.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav id="modules" aria-label="Chapters"></nav>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. No build step.</p>
+  </footer>
+
+  <script>
+    /* Navigation data. To add a chapter or activate an item, edit this list:
+       set href to the page path to make an item live; leave href null for "coming soon". */
+    const MODULES = [
+      {
+        label: "Lewis Structures",
+        blurb: "Octets, central atoms, valence-electron counts, formal charge, resonance.",
+        items: [
+          { kind: "Quiz", title: "Quiz 1 — Lewis Structures", meta: "28 questions · 25 pts + bonus", href: "quizzes/quiz01-lewis-structures/index.html" },
+          { kind: "Notes", title: "Chapter notes", meta: "Coming soon", href: null },
+        ],
+      },
+      {
+        label: "Next chapter",
+        blurb: "Placeholder for the next chapter's quiz and notes.",
+        items: [
+          { kind: "Quiz", title: "Quiz 2", meta: "Coming soon", href: null },
+          { kind: "Notes", title: "Chapter notes", meta: "Coming soon", href: null },
+        ],
+      },
+    ];
+
+    const nav = document.getElementById("modules");
+    MODULES.forEach((m, i) => {
+      const sec = document.createElement("section");
+      sec.className = "module";
+      sec.innerHTML = `<div class="mod-head"><span class="num">${String(i + 1).padStart(2, "0")}</span><div><h2>${m.label}</h2><p>${m.blurb}</p></div></div>`;
+      const grid = document.createElement("div");
+      grid.className = "items";
+      m.items.forEach((it) => {
+        const live = !!it.href;
+        const node = document.createElement(live ? "a" : "div");
+        node.className = "item" + (live ? " live" : " soon");
+        if (live) node.href = it.href; else node.setAttribute("aria-disabled", "true");
+        node.innerHTML = `<span class="kind">${it.kind}</span><span class="title">${it.title}</span><span class="meta">${it.meta}</span>${live ? '<span class="go" aria-hidden="true">Open →</span>' : ""}`;
+        grid.appendChild(node);
+      });
+      sec.appendChild(grid);
+      nav.appendChild(sec);
+    });
+  </script>
+</body>
+</html>
