@@ -169,3 +169,17 @@ button { font: inherit; }
   .progress .bar { width: 80px; }
 }
 .katex { font-size: 1.04em; }
+
+/* source tag, numeric answers, reference drawers (added with quiz 2) */
+.q-head .src { font-size: 12px; color: var(--muted); background: var(--line-2); border-radius: 3px; padding: 2px 7px; white-space: nowrap; }
+.numeric { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; }
+.numeric input { font: inherit; width: 180px; padding: 6px 10px; border: 1px solid #b3b9bf; border-radius: 4px; }
+.numeric input.right { border-color: var(--ok); background: var(--ok-bg); }
+.numeric input.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.numeric .unit { color: var(--ink-2); }
+details.ref { margin: 0 0 12px; border: 1px solid var(--line-2); border-radius: 4px; padding: 6px 10px; background: #fafbfc; }
+details.ref summary { cursor: pointer; font-size: 14px; color: var(--focus); }
+details.ref img { display: block; max-width: 100%; height: auto; margin-top: 8px; }
+.prompt table.data { border-collapse: collapse; margin: 6px 0; font-size: 14px; }
+.prompt table.data td, .prompt table.data th { border: 1px solid var(--line); padding: 3px 9px; text-align: center; }
+.prompt table.data th { background: #f1f4f7; font-weight: 700; }

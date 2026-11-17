@@ -25,14 +25,27 @@
     const a = state.answers[q.n];
     if (q.type === "multi") return Array.isArray(a) ? a : [];
     if (q.type === "match") return a && typeof a === "object" ? a : {};
+    if (q.type === "numeric") return typeof a === "string" ? a : "";
     return typeof a === "number" ? a : null;
   };
   const isAnswered = (q) => {
     const a = answerOf(q);
     if (q.type === "multi") return a.length > 0;
     if (q.type === "match") return q.items.some((_, i) => a[i]);
+    if (q.type === "numeric") return a.trim() !== "";
     return a !== null;
   };
+
+  // numeric answers: accepts 1.5, -217, +222, 3/2, "1 1/2", unicode minus
+  function parseNum(str) {
+    let t = String(str).trim().replace(/[\u2212\u2013]/g, "-").replace(/,/g, "").replace(/\s*(kJ\/mol|kJ|electrons?|D|Å)\s*$/i, "");
+    let m = t.match(/^([+-]?)\s*(\d+)\s+(\d+)\/(\d+)$/);
+    if (m) return (m[1] === "-" ? -1 : 1) * (Number(m[2]) + Number(m[3]) / Number(m[4]));
+    m = t.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
+    if (m) return Number(m[1]) / Number(m[2]);
+    return t !== "" && isFinite(Number(t)) ? Number(t) : NaN;
+  }
+  const numOk = (q) => { const x = parseNum(answerOf(q)); return isFinite(x) && Math.abs(x - q.answer) <= (q.tol ?? 1e-9) + 1e-9; };
 
   // ---------------- scoring ----------------
   // multi: right-minus-wrong over all options, floored at 0 (matches the original quiz's scores)
@@ -40,6 +53,7 @@
     if (!isAnswered(q)) return 0;          // unanswered questions earn nothing
     const a = answerOf(q);
     if (q.type === "single") return a !== null && q.options[a].correct ? q.points : 0;
+    if (q.type === "numeric") return numOk(q) ? q.points : 0;
     if (q.type === "match") {
       const right = q.items.filter((it, i) => a[i] === it.answer).length;
       return (q.points * right) / q.items.length;
@@ -61,7 +75,7 @@
 
   function renderIntro() {
     const box = el("div", { class: "intro" });
-    box.innerHTML = `<p><strong>${QZ.course}</strong> · ${QZ.questions.length} questions · ${QZ.questions.filter(q => !q.bonus).reduce((t, q) => t + q.points, 0)} points + bonus.</p>
+    box.innerHTML = `<p><strong>${QZ.course}</strong> · ${QZ.questions.length} questions · ${fmt(QZ.questions.filter(q => !q.bonus).reduce((t, q) => t + q.points, 0))} points${QZ.questions.some(q => q.bonus) ? " + bonus" : ""}.</p>
       <p>Answer, then press <strong>Check</strong> on any question (or <strong>Grade all</strong>) for immediate grading. The panel explains why each option is right or wrong.</p>
       <p>${QZ.scoring}</p>${QZ.toolsNote ? `<p>${QZ.toolsNote}</p>` : ""}`;
     quizEl.appendChild(box);
@@ -71,7 +85,7 @@
     const card = el("section", { class: "q", id: "q" + q.n, "aria-labelledby": "qh" + q.n });
     const title = q.title || `Question ${q.n}`;
     const ptsLabel = `${fmt(q.points)} point${q.points === 1 ? "" : "s"}`;
-    card.innerHTML = `<div class="q-head"><h2 id="qh${q.n}">${title} <span class="pts">(${ptsLabel})</span></h2><span class="status"></span></div>`;
+    card.innerHTML = `<div class="q-head"><h2 id="qh${q.n}">${title} <span class="pts">(${ptsLabel})</span></h2>${q.src ? `<span class="src">${q.src}</span>` : ""}<span class="status"></span></div>`;
     const body = el("div", { class: "q-body" });
     body.appendChild(el("div", { class: "prompt" }, q.prompt));
     if (q.figure) {
@@ -80,8 +94,25 @@
       body.appendChild(f);
     }
     if (q.prompt2) body.appendChild(el("div", { class: "prompt" }, q.prompt2));
+    (q.refs || []).forEach((key) => {
+      const r = (QZ.refs || {})[key];
+      if (!r) return;
+      const d = el("details", { class: "ref" });
+      d.appendChild(el("summary", {}, r.label));
+      d.appendChild(el("img", { src: r.img, alt: r.alt || r.label, loading: "lazy" }));
+      body.appendChild(d);
+    });
 
-    if (q.type === "match") {
+    if (q.type === "numeric") {
+      const wrap = el("div", { class: "numeric" });
+      const inp = el("input", { type: "text", inputmode: "decimal", autocomplete: "off", spellcheck: false, "aria-label": "Answer" });
+      inp.value = answerOf(q);
+      inp.addEventListener("input", () => { state.answers[q.n] = inp.value; ungrade(q); save(); refresh(q); });
+      inp.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { grade(q); setCurrent(q.n, false); } });
+      wrap.appendChild(inp);
+      if (q.unit) wrap.appendChild(el("span", { class: "unit" }, q.unit));
+      body.appendChild(wrap);
+    } else if (q.type === "match") {
       const grid = el("div", { class: "match" });
       const a = answerOf(q);
       q.items.forEach((it, i) => {
@@ -148,7 +179,12 @@
     const a = answerOf(q);
     const graded = !!state.graded[q.n];
     card.classList.toggle("graded", graded);
-    if (q.type === "match") {
+    if (q.type === "numeric") {
+      const inp = card.querySelector(".numeric input");
+      if (document.activeElement !== inp) inp.value = a;
+      inp.classList.toggle("right", graded && numOk(q));
+      inp.classList.toggle("wrong", graded && !numOk(q));
+    } else if (q.type === "match") {
       card.querySelectorAll("select").forEach((s, i) => {
         s.value = a[i] || "";
         s.classList.toggle("right", graded && a[i] === q.items[i].answer);
@@ -259,13 +295,20 @@
     } else {
       const a = answerOf(q);
       h += graded
-        ? `<div class="sub">Score ${fmt(score(q))} / ${fmt(q.points)}${q.bonus ? " (bonus)" : ""} · ${q.type === "multi" ? "right-minus-wrong per option" : q.type === "match" ? "per item" : "all or nothing"}</div>`
+        ? `<div class="sub">Score ${fmt(score(q))} / ${fmt(q.points)}${q.bonus ? " (bonus)" : ""} · ${q.type === "multi" ? "right-minus-wrong per option" : q.type === "match" ? "per item" : q.type === "numeric" ? (q.tol ? `numeric, ±${q.tol} accepted` : "numeric, exact") : "all or nothing"}</div>`
         : `<div class="sub">Peeking: answer key shown, not graded.</div>`;
-      if (q.type === "match") {
+      if (q.type === "numeric") {
+        const ok = numOk(q);
+        const cls = graded ? (ok ? "right" : "wrong") : "peek";
+        h += `<div class="ex ${cls}"><div class="what"><strong>Answer:</strong> ${q.answerText || q.answer}${q.unit ? " " + q.unit : ""}</div>
+          <div class="chips">${graded ? `<span class="chip">You: ${a.trim() ? a.replace(/</g, "&lt;") : "—"}</span><span class="chip ${ok ? "v-right" : "v-wrong"}">${ok ? "✓ right" : "✗ wrong"}</span>` : ""}</div>
+          <div class="why">${q.why || ""}</div></div>`;
+      } else if (q.type === "match") {
         q.items.forEach((it, i) => {
           const ok = a[i] === it.answer;
           const cls = graded ? (ok ? "right" : "wrong") : "peek";
-          h += `<div class="ex ${cls}"><div class="what"><strong>${it.label}</strong> → ${it.answer} bond${it.answer === "1" ? "" : "s"}</div>
+          const unit = q.unit ? " " + q.unit + (it.answer === "1" ? "" : "s") : "";
+          h += `<div class="ex ${cls}"><div class="what"><strong>${it.label}</strong> → ${it.answer}${unit}</div>
             <div class="chips">${graded ? `<span class="chip">You: ${a[i] || "—"}</span><span class="chip ${ok ? "v-right" : "v-wrong"}">${ok ? "✓ right" : "✗ wrong"}</span>` : ""}</div>
             <div class="why">${it.why}</div></div>`;
         });

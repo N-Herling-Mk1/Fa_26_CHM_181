@@ -4,65 +4,96 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CHEM 181 · Study Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" href="assets/img/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="assets/css/hub.css">
 </head>
 <body>
   <header class="hero">
     <div class="wrap">
-      <p class="kicker">CHEM 181 · General Chemistry I</p>
+      <p class="kicker">CHEM 181 · Principles of Modern Chemistry · Fall 2026</p>
       <h1>Study Hub</h1>
-      <p class="lede">Quizzes and chapter notes, one chapter at a time. Live items are linked; the rest are placeholders until they are built.</p>
+      <p class="lede">One quiz per lecture deck. Each one collects every question the deck asks or proposes (YOUR TURN slides, homework and past-exam examples, hidden slides included), graded on the spot with an explanation for every option.</p>
     </div>
   </header>
 
   <main class="wrap">
-    <nav id="modules" aria-label="Chapters"></nav>
+    <section aria-labelledby="decks-h">
+      <div class="sec-head">
+        <h2 id="decks-h">Lecture deck quizzes</h2>
+        <p id="deck-count"></p>
+      </div>
+      <nav id="decks" class="decks" aria-label="Lecture deck quizzes"></nav>
+    </section>
+
+    <section aria-labelledby="other-h">
+      <div class="sec-head">
+        <h2 id="other-h">Assignments</h2>
+        <p>Practice versions of graded course assignments.</p>
+      </div>
+      <nav id="others" class="decks" aria-label="Assignment quizzes"></nav>
+    </section>
   </main>
 
   <footer class="wrap foot">
-    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. No build step.</p>
+    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. To add a deck quiz, append an entry to <code>DECKS</code> in this file.</p>
   </footer>
 
   <script>
-    /* Navigation data. To add a chapter or activate an item, edit this list:
-       set href to the page path to make an item live; leave href null for "coming soon". */
-    const MODULES = [
+    /* Navigation data. Append one entry per lecture deck as its quiz is built.
+       href: path to the quiz page (null = shown as "coming soon"); saved progress is read from
+       localStorage using the quiz's id, so the card shows how far you got. */
+    const DECKS = [
       {
-        label: "Lewis Structures",
-        blurb: "Octets, central atoms, valence-electron counts, formal charge, resonance.",
-        items: [
-          { kind: "Quiz", title: "Quiz 1 — Lewis Structures", meta: "28 questions · 25 pts + bonus", href: "quizzes/quiz01-lewis-structures/index.html" },
-          { kind: "Notes", title: "Chapter notes", meta: "Coming soon", href: null },
-        ],
+        chapter: "Ch. 8", title: "Introduction to Chemical Bonding",
+        topics: ["Bond energetics", "Lewis symbols & octet", "Ion configurations", "Born–Haber", "Polarity", "Formal charge", "Bond enthalpies", "Resonance"],
+        meta: "56 questions · 89-slide deck", id: "chem181-quiz02-ch08-bonding", total: 56,
+        href: "quizzes/quiz02-ch08-chemical-bonding/index.html",
       },
+    ];
+    const OTHERS = [
       {
-        label: "Next chapter",
-        blurb: "Placeholder for the next chapter's quiz and notes.",
-        items: [
-          { kind: "Quiz", title: "Quiz 2", meta: "Coming soon", href: null },
-          { kind: "Notes", title: "Chapter notes", meta: "Coming soon", href: null },
-        ],
+        chapter: "Project", title: "Lewis Structure Project",
+        topics: ["Octets", "Central atoms", "Formal charge", "Resonance"],
+        meta: "28 questions · 25 pts + bonus", id: "chem181-quiz01-lewis", total: 28,
+        href: "quizzes/quiz01-lewis-structures/index.html",
       },
     ];
 
-    const nav = document.getElementById("modules");
-    MODULES.forEach((m, i) => {
-      const sec = document.createElement("section");
-      sec.className = "module";
-      sec.innerHTML = `<div class="mod-head"><span class="num">${String(i + 1).padStart(2, "0")}</span><div><h2>${m.label}</h2><p>${m.blurb}</p></div></div>`;
-      const grid = document.createElement("div");
-      grid.className = "items";
-      m.items.forEach((it) => {
-        const live = !!it.href;
-        const node = document.createElement(live ? "a" : "div");
-        node.className = "item" + (live ? " live" : " soon");
-        if (live) node.href = it.href; else node.setAttribute("aria-disabled", "true");
-        node.innerHTML = `<span class="kind">${it.kind}</span><span class="title">${it.title}</span><span class="meta">${it.meta}</span>${live ? '<span class="go" aria-hidden="true">Open →</span>' : ""}`;
-        grid.appendChild(node);
+    function progress(id, total) {
+      try {
+        const s = JSON.parse(localStorage.getItem("quiz-state:" + id));
+        if (!s || !s.answers) return null;
+        const n = Object.values(s.answers).filter((a) => Array.isArray(a) ? a.length : a && typeof a === "object" ? Object.values(a).some(Boolean) : a !== null && a !== "").length;
+        return n ? Math.min(n, total) : null;
+      } catch (e) { return null; }
+    }
+
+    function render(list, target) {
+      const nav = document.getElementById(target);
+      list.forEach((d) => {
+        const live = !!d.href;
+        const card = document.createElement(live ? "a" : "div");
+        card.className = "deck" + (live ? " live" : " soon");
+        if (live) card.href = d.href; else card.setAttribute("aria-disabled", "true");
+        const done = live ? progress(d.id, d.total) : null;
+        const pct = done ? Math.round((100 * done) / d.total) : 0;
+        card.innerHTML = `
+          <span class="chap">${d.chapter}</span>
+          <span class="title">${d.title}</span>
+          <span class="topics">${d.topics.map((t) => `<span>${t}</span>`).join("")}</span>
+          <span class="meta">${live ? d.meta : "Coming soon"}</span>
+          ${done ? `<span class="prog" title="${done} of ${d.total} answered"><i style="width:${pct}%"></i></span><span class="prog-text">${done} / ${d.total} answered</span>` : ""}
+          ${live ? `<span class="go">${done ? "Continue" : "Start quiz"} →</span>` : ""}`;
+        nav.appendChild(card);
       });
-      sec.appendChild(grid);
-      nav.appendChild(sec);
-    });
+    }
+
+    render(DECKS, "decks");
+    render(OTHERS, "others");
+    const live = DECKS.filter((d) => d.href).length;
+    document.getElementById("deck-count").textContent = `${live} deck${live === 1 ? "" : "s"} live · more added as chapters are covered`;
   </script>
 </body>
 </html>

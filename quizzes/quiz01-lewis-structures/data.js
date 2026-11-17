@@ -47,7 +47,7 @@
       },
       // ------------------------------------------------------------------ Q3
       {
-        n: 3, points: 0.25, type: "match",
+        n: 3, points: 0.25, type: "match", unit: "bond",
         prompt: R`Assuming formal charges are zero, one can predict how many bonds an atom will make based on its group. Match the following group number with the number of bonds it will typically make.`,
         choices: ["1", "2", "3", "4"],
         items: [
