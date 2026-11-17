@@ -11,24 +11,39 @@
 </head>
 <body>
   <header class="hero">
-    <div class="wrap">
-      <p class="kicker">CHEM 181 · Principles of Modern Chemistry · Fall 2026</p>
-      <h1>Study Hub</h1>
-      <p class="lede">One quiz per lecture deck. Each one collects every question the deck asks or proposes (YOUR TURN slides, homework and past-exam examples, hidden slides included), graded on the spot with an explanation for every option.</p>
+    <div class="wrap hero-grid">
+      <img class="emblem" src="assets/img/icon-512.png" alt="" width="132" height="132">
+      <div>
+        <p class="kicker">CHEM 181 // Principles of Modern Chemistry // Fall 2026</p>
+        <h1>Study Hub</h1>
+        <p class="lede">One quiz per lecture deck, plus past exams. Each deck quiz collects every question the deck asks or proposes (YOUR TURN slides, homework and past-exam examples, hidden slides included), graded on the spot with an explanation for every option.</p>
+        <p class="readout" id="readout" aria-live="polite"></p>
+      </div>
     </div>
   </header>
 
   <main class="wrap">
-    <section aria-labelledby="decks-h">
+    <section aria-labelledby="decks-h" data-accent="cyan">
       <div class="sec-head">
+        <span class="idx">01 //</span>
         <h2 id="decks-h">Lecture deck quizzes</h2>
         <p id="deck-count"></p>
       </div>
       <nav id="decks" class="decks" aria-label="Lecture deck quizzes"></nav>
     </section>
 
-    <section aria-labelledby="other-h">
+    <section aria-labelledby="exams-h" data-accent="ares">
       <div class="sec-head">
+        <span class="idx">02 //</span>
+        <h2 id="exams-h">Practice exams</h2>
+        <p>Past mid-terms with the answer key, graded per question.</p>
+      </div>
+      <nav id="exams" class="decks" aria-label="Practice exams"></nav>
+    </section>
+
+    <section aria-labelledby="other-h" data-accent="amber">
+      <div class="sec-head">
+        <span class="idx">03 //</span>
         <h2 id="other-h">Assignments</h2>
         <p>Practice versions of graded course assignments.</p>
       </div>
@@ -37,7 +52,7 @@
   </main>
 
   <footer class="wrap foot">
-    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. To add a deck quiz, append an entry to <code>DECKS</code> in this file.</p>
+    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. To add a quiz, append an entry to <code>DECKS</code> or <code>EXAMS</code> in this file.</p>
   </footer>
 
   <script>
@@ -50,6 +65,14 @@
         topics: ["Bond energetics", "Lewis symbols & octet", "Ion configurations", "Born–Haber", "Polarity", "Formal charge", "Bond enthalpies", "Resonance"],
         meta: "56 questions · 89-slide deck", id: "chem181-quiz02-ch08-bonding", total: 56,
         href: "quizzes/quiz02-ch08-chemical-bonding/index.html",
+      },
+    ];
+    const EXAMS = [
+      {
+        chapter: "Mid-term 3", title: "Fall 2023 · Form D",
+        topics: ["Bond enthalpy", "Polarity", "Formal charge", "VSEPR", "Hybridization", "σ / π bonds", "MO theory"],
+        meta: "29 questions · Nov 15, 2023", id: "chem181-exam03-mt3-f23-formD", total: 29,
+        href: "quizzes/exam03-mt3-f23/index.html",
       },
     ];
     const OTHERS = [
@@ -85,15 +108,21 @@
           <span class="topics">${d.topics.map((t) => `<span>${t}</span>`).join("")}</span>
           <span class="meta">${live ? d.meta : "Coming soon"}</span>
           ${done ? `<span class="prog" title="${done} of ${d.total} answered"><i style="width:${pct}%"></i></span><span class="prog-text">${done} / ${d.total} answered</span>` : ""}
-          ${live ? `<span class="go">${done ? "Continue" : "Start quiz"} →</span>` : ""}`;
+          ${live ? `<span class="go">${done ? (done === d.total ? "Review" : "Continue") : "Start quiz"} <b aria-hidden="true">→</b></span>` : ""}`;
         nav.appendChild(card);
       });
     }
 
     render(DECKS, "decks");
+    render(EXAMS, "exams");
     render(OTHERS, "others");
     const live = DECKS.filter((d) => d.href).length;
     document.getElementById("deck-count").textContent = `${live} deck${live === 1 ? "" : "s"} live · more added as chapters are covered`;
+    const all = [...DECKS, ...EXAMS, ...OTHERS].filter((d) => d.href);
+    const qs = all.reduce((t, d) => t + d.total, 0);
+    const answered = all.reduce((t, d) => t + (progress(d.id, d.total) || 0), 0);
+    document.getElementById("readout").textContent =
+      `SYS // ${all.length} quizzes online · ${qs} questions · ${answered} answered on this device`;
   </script>
 </body>
 </html>

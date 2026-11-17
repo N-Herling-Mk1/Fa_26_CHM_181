@@ -5,8 +5,9 @@ Static study site for CHEM 181 (General Chemistry I): a navigation page plus one
 ## Layout
 
 ```
-index.html                         splash page: one button per lecture-deck quiz (edit DECKS / OTHERS)
+index.html                         splash page: lecture-deck quizzes, practice exams, assignments (edit DECKS / EXAMS / OTHERS)
 assets/img/                        tab icon: favicon-32.png, favicon.ico (16/32/48), apple-touch-icon.png, icon-512.png
+assets/vendor/fonts/               Orbitron + Share Tech Mono (self-hosted, SIL OFL) for the hub's TRON Ares light style
 assets/
   css/hub.css                      navigation page styles
   css/quiz.css                     quiz page styles (Brightspace-like layout)
@@ -21,6 +22,10 @@ quizzes/
     index.html                     quiz page
     data.js                        56 questions (47 from the Ch. 8 lecture deck + 9 added), keys, explanations
     img/                           figures and option images cropped from the deck, plus reference tables
+  exam03-mt3-f23/
+    index.html                     practice exam page
+    data.js                        Mid-term #3 (Fall 2023, form D): 29 questions with the key
+    img/                           exam figures, the exam's information pages, redrawn MO diagram
 ```
 
 ## Quiz features
@@ -36,7 +41,7 @@ quizzes/
 
 1. Copy `quizzes/quiz01-lewis-structures/` to a new folder.
 2. Rewrite `data.js`. Question types are `single`, `multi`, `match` and `numeric` (`answer`, optional `tol`, `unit`; accepts `1.5`, `3/2`, `1 1/2`). The field reference is at the top of `quizzes/quiz02-ch08-chemical-bonding/data.js`. Math goes in `$...$`, and chemical formulas in `\ce{...}`.
-3. Give the quiz a unique `id`, then add an entry to `DECKS` in the root `index.html` with the same `id`, the question count as `total`, and its `href`. The card shows saved progress from that `id`.
+3. Give the quiz a unique `id`, then add an entry to `DECKS` (or `EXAMS`) in the root `index.html` with the same `id`, the question count as `total`, and its `href`. The card shows saved progress from that `id`.
 
 ## Hosting on GitHub Pages
 

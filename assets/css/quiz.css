@@ -183,3 +183,4 @@ details.ref img { display: block; max-width: 100%; height: auto; margin-top: 8px
 .prompt table.data { border-collapse: collapse; margin: 6px 0; font-size: 14px; }
 .prompt table.data td, .prompt table.data th { border: 1px solid var(--line); padding: 3px 9px; text-align: center; }
 .prompt table.data th { background: #f1f4f7; font-weight: 700; }
+.prompt .eq { display: block; text-align: center; margin: 8px 0; }
