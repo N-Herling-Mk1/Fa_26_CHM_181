@@ -1,18 +1,23 @@
 # CHEM 181 Study Hub
 
-Static study site for CHEM 181 (General Chemistry I): a navigation page plus one page per quiz or set of chapter notes. Plain HTML, CSS and JavaScript, no build step. It works when opened straight from disk (`file://`) or served with GitHub Pages.
+Static study site for CHEM 181 (General Chemistry I): a navigation page, the lecture slide decks, and one page per quiz. Plain HTML, CSS and JavaScript, no build step. It works when opened straight from disk (`file://`) or served with GitHub Pages.
 
 ## Layout
 
 ```
-index.html                         splash page: lecture-deck quizzes, practice exams, assignments (edit DECKS / EXAMS / OTHERS)
+index.html                         hub: top nav + four columns (deck quizzes | slide decks | practice exams | assignments);
+                                   edit DECKS / EXAMS / OTHERS here, slide decks in assets/js/slides.js
 assets/img/                        tab icon: favicon-32.png, favicon.ico (16/32/48), apple-touch-icon.png, icon-512.png
 assets/vendor/fonts/               Orbitron + Share Tech Mono (self-hosted, SIL OFL) for the hub's TRON Ares light style
 assets/
   css/hub.css                      navigation page styles
   css/quiz.css                     quiz page styles (Brightspace-like layout)
   js/quiz-engine.js                shared quiz renderer, grader and explanation panel
+  js/slides.js                     slide-deck list (SLIDE_DECKS), read by the hub and the slide viewer
   vendor/katex/                    KaTeX 0.16 + mhchem + auto-render, bundled for offline use (MIT)
+slides/
+  viewer.html                      slide viewer: viewer.html?d=ch06 shows that deck's PDF, with deck picker, Open PDF, .pptx download
+  decks/                           181.N_Ch_N_2026.pptx (original) + .pdf (LibreOffice render, hidden slides included)
 quizzes/
   quiz01-lewis-structures/
     index.html                     quiz page
@@ -36,6 +41,17 @@ quizzes/
 - The side panel (a drawer on narrow screens) lists every option with the key, your choice, ✓/✗, and why. **Peek** shows the key without grading.
 - Multi-select questions use right-minus-wrong scoring per option, which reproduces the original quiz's partial scores (for example $(6-1)/7 = 0.714$).
 - Answers persist in `localStorage` per quiz, and **Reset** clears them.
+
+## Navigation
+
+- Every page has a large **Home** button at the left of its top bar; the hub's top nav also jumps to each column.
+- Every hub card has a **↗** button that opens it in a new tab (the card itself opens in the same tab). Slide cards add **PDF** (new tab) and **.pptx ⤓** (download).
+
+## Adding a slide deck
+
+1. Put `181.N_Ch_N_2026.pptx` in `slides/decks/` and export the PDF next to it with hidden slides included:
+   `soffice --headless --convert-to 'pdf:impress_pdf_Export:{"ExportHiddenSlides":{"type":"boolean","value":"true"}}' --outdir slides/decks slides/decks/181.N_Ch_N_2026.pptx`
+2. Append an entry to `SLIDE_DECKS` in `assets/js/slides.js` (`key`, `chapter`, `title`, `file` without extension, slide counts, file sizes, `topics`, and `quiz` if the chapter has one).
 
 ## Adding a quiz
 

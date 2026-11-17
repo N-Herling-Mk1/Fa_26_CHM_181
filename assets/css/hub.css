@@ -1,6 +1,6 @@
 /* CHEM 181 Study Hub — TRON Ares light.
    Pale grid field, Orbitron display type, Share Tech Mono readouts, one accent per section:
-   cyan = lecture decks, Ares red-orange = practice exams, amber = assignments.
+   cyan = deck quizzes, violet = slide decks, Ares red-orange = practice exams, amber = assignments.
    Accent text uses the darker "-ink" shade so small text keeps >= 4.5:1 contrast on white. */
 /* Fonts are self-hosted (SIL OFL 1.1, licenses in assets/vendor/fonts/) so the hub works offline. */
 @font-face { font-family: "Orbitron"; font-weight: 500; font-style: normal; font-display: swap; src: url("../vendor/fonts/orbitron-latin-500-normal.woff2") format("woff2"); }
@@ -13,6 +13,7 @@
   --cyan: #00b4d8; --cyan-ink: #00708a;
   --ares: #e8230a; --ares-ink: #b81b06;
   --amber: #f2a100; --amber-ink: #8f5a00;
+  --violet: #8a3ffc; --violet-ink: #5b1fbf;
   --display: "Orbitron", "Segoe UI", Arial, sans-serif;
   --mono: "Share Tech Mono", "Consolas", "Courier New", monospace;
   --body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -27,7 +28,26 @@ body {
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-.wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+.wrap { max-width: 1520px; margin: 0 auto; padding: 0 24px; }
+html { scroll-behavior: smooth; }
+[id^="col-"] { scroll-margin-top: 78px; }
+
+/* ---------- top nav: large Home button + jump links to the columns ---------- */
+.topnav { position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, 0.94); border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px); }
+.topnav-row { display: flex; align-items: center; gap: 22px; min-height: 62px; flex-wrap: wrap; }
+.home-btn {
+  display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; min-height: 44px;
+  font-family: var(--display); font-weight: 900; font-size: 18px; letter-spacing: .14em; text-transform: uppercase;
+  color: #fff; background: var(--cyan-ink); text-decoration: none; border: 1px solid var(--cyan);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  box-shadow: 0 0 14px rgba(0, 180, 216, .35); transition: background .15s;
+}
+.home-btn span { font-size: 22px; line-height: 1; letter-spacing: 0; }
+.home-btn:hover, .home-btn:focus-visible { background: var(--cyan); outline: none; }
+.topnav-links { display: flex; gap: 6px 18px; flex-wrap: wrap; font-family: var(--mono); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+.topnav-links a { color: var(--ink-2); text-decoration: none; padding: 4px 2px; border-bottom: 2px solid transparent; }
+.topnav-links a:hover, .topnav-links a:focus-visible { color: var(--cyan-ink); border-bottom-color: var(--cyan); outline: none; }
 
 /* ---------- hero ---------- */
 .hero { background: rgba(255, 255, 255, 0.82); border-bottom: 1px solid var(--line); padding: 46px 0 34px; margin-bottom: 38px; position: relative; }
@@ -44,16 +64,20 @@ body {
   background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 
 /* ---------- sections ---------- */
-section { margin-bottom: 40px; --acc: var(--cyan); --acc-ink: var(--cyan-ink); }
+section { margin-bottom: 40px; min-width: 0; --acc: var(--cyan); --acc-ink: var(--cyan-ink); }
 section[data-accent="ares"] { --acc: var(--ares); --acc-ink: var(--ares-ink); }
 section[data-accent="amber"] { --acc: var(--amber); --acc-ink: var(--amber-ink); }
-.sec-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+section[data-accent="violet"] { --acc: var(--violet); --acc-ink: var(--violet-ink); }
+
+/* ---------- four columns: quizzes | slides | exams | assignments ---------- */
+.columns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 22px; align-items: start; }
+.sec-head { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--acc); }
 .sec-head .idx { font-family: var(--mono); font-size: 15px; color: var(--acc-ink); }
-.sec-head h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 19px; letter-spacing: .08em; text-transform: uppercase; }
-.sec-head p { margin: 0 0 0 auto; color: var(--muted); font-size: 14px; }
+.sec-head h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; }
+.sec-head p { margin: 0; flex-basis: 100%; color: var(--muted); font-size: 13.5px; line-height: 1.4; }
 
 /* ---------- cards: clipped corners, accent edge glow on hover ---------- */
-.decks { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.decks { display: flex; flex-direction: column; gap: 16px; }
 .deck {
   /* the card's own background is the 1px frame; ::before is the white panel inset by 1px.
      Both share the clipped-corner polygon, so the cut corners get a real edge. */
@@ -69,22 +93,37 @@ section[data-accent="amber"] { --acc: var(--amber); --acc-ink: var(--amber-ink);
 }
 .deck .chap { align-self: flex-start; font-family: var(--mono); font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--acc-ink); border: 1px solid var(--acc); padding: 1px 8px; background: color-mix(in srgb, var(--acc) 8%, white); }
-.deck .title { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.3; letter-spacing: .02em; margin-top: 3px; }
+.deck .title { font-family: var(--display); font-weight: 700; font-size: 16.5px; line-height: 1.3; letter-spacing: .02em; margin-top: 3px; }
 .deck .topics { display: flex; flex-wrap: wrap; gap: 5px; margin: 3px 0 1px; }
 .deck .topics span { font-size: 12px; color: var(--ink-2); background: #f2f7f9; border: 1px solid #dde9ee; padding: 1px 7px; }
 .deck .meta { font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .deck .prog { display: block; height: 4px; background: #e3edf1; margin-top: 4px; overflow: hidden; }
 .deck .prog i { display: block; height: 100%; background: var(--acc); box-shadow: 0 0 8px var(--acc); }
 .deck .prog-text { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+/* actions row: .go is the primary link and is stretched over the whole card (::after);
+   .newtab / .dl sit above it so they stay separately clickable. */
+.deck .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.deck .go::after { content: ""; position: absolute; inset: 0; z-index: 0; }
+.deck .newtab, .deck .dl {
+  position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; text-decoration: none; color: var(--acc-ink);
+  border: 1px solid var(--line); background: #fff; padding: 7px 10px; min-height: 36px; transition: border-color .15s, background .15s, color .15s;
+}
+.deck .newtab { font-family: var(--body); font-size: 17px; font-weight: 700; min-width: 38px; padding: 4px 8px; }
+.deck .newtab:hover, .deck .newtab:focus-visible, .deck .dl:hover, .deck .dl:focus-visible {
+  border-color: var(--acc); background: color-mix(in srgb, var(--acc) 10%, white); outline: none; }
+.deck .chap-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.deck .dl.quiz { color: var(--cyan-ink); min-height: 26px; padding: 2px 8px; font-size: 12.5px; }
+.deck .dl.quiz:hover, .deck .dl.quiz:focus-visible { border-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 10%, white); }
 .deck .go {
-  align-self: flex-start; margin-top: 10px; font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--acc-ink); border: 1px solid var(--acc); padding: 8px 14px; background: transparent; transition: background .15s, color .15s, box-shadow .15s;
 }
 .deck .go b { font-weight: 700; display: inline-block; transition: transform .15s; }
-.deck.live:hover, .deck.live:focus-visible { outline: none; transform: translateY(-2px); background: var(--acc); }
-.deck.live:hover::before, .deck.live:focus-visible::before { box-shadow: inset 0 0 22px color-mix(in srgb, var(--acc) 14%, transparent); }
-.deck.live:hover .go, .deck.live:focus-visible .go { background: var(--acc); color: #fff; box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 55%, transparent); }
-section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] .deck.live:focus-visible .go { color: #2b1a00; }
+.deck.live:hover, .deck.live:focus-within { outline: none; transform: translateY(-2px); background: var(--acc); }
+.deck.live:hover::before, .deck.live:focus-within::before { box-shadow: inset 0 0 22px color-mix(in srgb, var(--acc) 14%, transparent); }
+.deck.live:hover .go, .deck.live:focus-within .go { background: var(--acc); color: #fff; box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 55%, transparent); }
+section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] .deck.live:focus-within .go { color: #2b1a00; }
 .deck.live:hover .go b { transform: translateX(3px); }
 .deck.soon { color: var(--muted); cursor: not-allowed; background: #f7fafb; }
 
@@ -92,10 +131,13 @@ section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] 
 .foot { color: var(--muted); font-size: 13px; padding-top: 10px; padding-bottom: 44px; font-family: var(--mono); }
 code { font-family: var(--mono); background: #e6f1f5; padding: 1px 5px; color: var(--ink); }
 
+@media (max-width: 1240px) { .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .columns { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
+  .topnav-row { gap: 10px 16px; padding-top: 8px; padding-bottom: 8px; }
+  .home-btn { font-size: 16px; padding: 8px 16px; }
   .hero-grid { grid-template-columns: 1fr; gap: 18px; }
   .emblem { width: 88px; height: 88px; border-radius: 12px; }
   .hero h1 { font-size: 34px; }
-  .sec-head p { margin-left: 0; flex-basis: 100%; }
 }
-@media (prefers-reduced-motion: reduce) { .deck, .deck::before, .deck .go, .deck .go b { transition: none; } .deck.live:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .deck, .deck::before, .deck .go, .deck .go b, .home-btn { transition: none; } html { scroll-behavior: auto; } .deck.live:hover { transform: none; } }

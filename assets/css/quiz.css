@@ -33,6 +33,16 @@ button { font: inherit; }
 }
 .topbar .crumb { font-size: 14px; color: var(--muted); text-decoration: none; white-space: nowrap; }
 .topbar .crumb:hover { color: var(--focus); }
+.home-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 8px 20px;
+  font-size: 17px; font-weight: 700; letter-spacing: .02em; color: #fff; background: var(--focus);
+  border: 1px solid var(--focus); border-radius: 6px; text-decoration: none; white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .18);
+}
+.home-btn span { font-size: 21px; line-height: 1; }
+.home-btn:hover { background: #005a9c; }
+.home-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 .topbar h1 { font-size: 18px; font-weight: 700; margin: 0; white-space: nowrap; }
 .topbar .spacer { flex: 1; }
 .progress { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
@@ -166,6 +176,7 @@ button { font: inherit; }
   .q { padding: 14px 14px 12px; }
   .q-body { padding-left: 4px; }
   .topbar { padding: 8px 12px; gap: 10px; }
+  .home-btn { font-size: 16px; padding: 6px 14px; min-height: 40px; }
   .progress .bar { width: 80px; }
 }
 .katex { font-size: 1.04em; }

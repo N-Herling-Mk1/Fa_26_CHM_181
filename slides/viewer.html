@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture slides · CHEM 181</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png">
+  <link rel="icon" href="../assets/img/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/css/quiz.css">
+  <style>
+    /* Slide viewer: shares the quiz pages' top bar; the PDF fills the rest of the window. */
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; }
+    .topbar { flex-wrap: nowrap; }
+    .topbar h1 { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; min-width: 80px; }
+    .topbar .spacer { display: none; }
+    .topbar .deckpick { display: flex; align-items: center; gap: 6px; }
+    .topbar select { font: inherit; font-size: 14px; padding: 7px 8px; border: 1px solid #c6ccd2; border-radius: 4px; background: #fff; max-width: 330px; }
+    .topbar .meta { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .viewer { flex: 1; min-height: 0; display: flex; background: #3b3f43; }
+    .viewer iframe { flex: 1; width: 100%; height: 100%; border: 0; display: block; }
+    .nopdf { margin: auto; max-width: 520px; background: #fff; border-radius: 8px; padding: 24px 26px; text-align: center; }
+    .nopdf p { margin: 0 0 16px; color: var(--ink-2); }
+    .nopdf .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    @media (max-width: 900px) { .topbar { flex-wrap: wrap; } .topbar h1 { flex-basis: 100%; order: 5; font-size: 16px; white-space: normal; } .topbar .meta { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="home-btn" href="../index.html" title="Back to the study hub"><span aria-hidden="true">⌂</span> Home</a>
+    <div class="deckpick">
+      <button class="btn small" id="btn-prev" type="button" title="Previous deck" aria-label="Previous deck">◀</button>
+      <label class="sr-only" for="deck-pick">Lecture deck</label>
+      <select id="deck-pick"></select>
+      <button class="btn small" id="btn-next" type="button" title="Next deck" aria-label="Next deck">▶</button>
+    </div>
+    <h1 id="deck-title">Lecture slides</h1>
+    <span class="meta" id="deck-meta"></span>
+    <div class="spacer"></div>
+    <a class="btn" id="btn-quiz" hidden>Deck quiz ↗</a>
+    <a class="btn" id="btn-pdf" target="_blank" rel="noopener">Open PDF ↗</a>
+    <a class="btn primary" id="btn-pptx" download>.pptx ⤓</a>
+  </header>
+
+  <main class="viewer">
+    <iframe id="frame" title="Lecture slides (PDF)"></iframe>
+    <div class="nopdf" id="nopdf" hidden>
+      <p>This browser can't show PDFs inside the page. Open the PDF on its own, or download the original PowerPoint.</p>
+      <div class="row">
+        <a class="btn primary" id="alt-pdf" target="_blank" rel="noopener">Open PDF ↗</a>
+        <a class="btn" id="alt-pptx" download>.pptx ⤓</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/slides.js"></script>
+  <script>
+    const decks = window.SLIDE_DECKS || [];
+    const want = new URLSearchParams(location.search).get("d");
+    let i = Math.max(0, decks.findIndex((d) => d.key === want));
+    const d = decks[i];
+    const $ = (id) => document.getElementById(id);
+
+    const pick = $("deck-pick");
+    decks.forEach((x, k) => pick.add(new Option(`${x.chapter} · ${x.title}`, x.key, false, k === i)));
+    const go = (k) => { if (k >= 0 && k < decks.length) location.search = "?d=" + decks[k].key; };
+    pick.addEventListener("change", () => go(pick.selectedIndex));
+    $("btn-prev").addEventListener("click", () => go(i - 1));
+    $("btn-next").addEventListener("click", () => go(i + 1));
+    $("btn-prev").disabled = i === 0;
+    $("btn-next").disabled = i === decks.length - 1;
+
+    if (d) {
+      const pdf = `decks/${d.file}.pdf`, pptx = `decks/${d.file}.pptx`;
+      document.title = `${d.chapter} slides — ${d.title} · CHEM 181`;
+      $("deck-title").textContent = `${d.chapter} — ${d.title}`;
+      $("deck-meta").textContent = `${d.slides} slides · incl. ${d.hidden} hidden`;
+      $("btn-pdf").href = $("alt-pdf").href = pdf;
+      $("btn-pdf").title = `Open the PDF (${d.pdfMB} MB) in a new tab`;
+      $("btn-pptx").href = $("alt-pptx").href = pptx;
+      $("btn-pptx").title = `Download the original PowerPoint (${d.pptxMB} MB)`;
+      if (d.quiz) {
+        const q = $("btn-quiz");
+        q.href = "../" + d.quiz; q.target = "_blank"; q.rel = "noopener"; q.hidden = false;
+        q.title = `Open the ${d.chapter} deck quiz in a new tab`;
+      }
+      // Mobile browsers (and some embedded ones) can't render a PDF in an iframe: offer the links instead.
+      if (navigator.pdfViewerEnabled === false) {
+        $("frame").remove(); $("nopdf").hidden = false;
+      } else {
+        $("frame").src = pdf + "#view=FitH";
+        $("frame").title = `${d.chapter} lecture slides (PDF)`;
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.target.closest("select, input")) return;
+      if (e.key === "[") go(i - 1);
+      if (e.key === "]") go(i + 1);
+    });
+  </script>
+</body>
+</html>
