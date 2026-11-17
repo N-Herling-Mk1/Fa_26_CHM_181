@@ -47,6 +47,9 @@ html { scroll-behavior: smooth; }
 .home-btn:hover, .home-btn:focus-visible { background: var(--cyan); outline: none; }
 .topnav-links { display: flex; gap: 6px 18px; flex-wrap: wrap; font-family: var(--mono); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
 .topnav-links a { color: var(--ink-2); text-decoration: none; padding: 4px 2px; border-bottom: 2px solid transparent; }
+.topnav-repo { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--cyan-ink); text-decoration: none; border: 1px solid var(--cyan); padding: 8px 14px; }
+.topnav-repo:hover, .topnav-repo:focus-visible { background: var(--cyan); color: #fff; outline: none; }
 .topnav-links a:hover, .topnav-links a:focus-visible { color: var(--cyan-ink); border-bottom-color: var(--cyan); outline: none; }
 
 /* ---------- hero ---------- */
@@ -54,6 +57,14 @@ html { scroll-behavior: smooth; }
 .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
   background: linear-gradient(90deg, transparent, var(--cyan) 20%, var(--cyan) 55%, var(--ares) 80%, transparent); opacity: .85; }
 .hero-grid { display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: center; }
+.hero-grid:has(.repo-card) { grid-template-columns: auto 1fr auto; }
+/* large repo banner (inline SVG so it uses the self-hosted fonts); opens GitHub in a new tab */
+.repo-card { display: block; line-height: 0; text-decoration: none;
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  box-shadow: 0 0 0 1px rgba(0, 180, 216, .45); transition: transform .15s, filter .15s; }
+.repo-card svg { display: block; width: 360px; height: auto; max-width: 100%; }
+.repo-card:hover, .repo-card:focus-visible { transform: translateY(-2px); filter: drop-shadow(0 0 14px rgba(0, 180, 216, .55)) brightness(1.08); outline: none; }
+.repo-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .emblem { width: 132px; height: 132px; border-radius: 18px; display: block;
   box-shadow: 0 0 0 1px rgba(0, 180, 216, .45), 0 0 22px rgba(0, 180, 216, .35), 0 6px 18px rgba(13, 26, 34, .18); }
 .kicker { margin: 0; font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan-ink); }
@@ -132,12 +143,16 @@ section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] 
 code { font-family: var(--mono); background: #e6f1f5; padding: 1px 5px; color: var(--ink); }
 
 @media (max-width: 1240px) { .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .hero-grid:has(.repo-card) { grid-template-columns: auto 1fr; } .repo-card { grid-column: 1 / -1; justify-self: start; } }
 @media (max-width: 720px) { .columns { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
+  .topnav { position: static; }
   .topnav-row { gap: 10px 16px; padding-top: 8px; padding-bottom: 8px; }
   .home-btn { font-size: 16px; padding: 8px 16px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 18px; }
+  .hero-grid, .hero-grid:has(.repo-card) { grid-template-columns: 1fr; gap: 18px; }
+  .repo-card { justify-self: stretch; } .repo-card svg { width: 100%; }
+  .topnav-repo { margin-left: 0; }
   .emblem { width: 88px; height: 88px; border-radius: 12px; }
   .hero h1 { font-size: 34px; }
 }
-@media (prefers-reduced-motion: reduce) { .deck, .deck::before, .deck .go, .deck .go b, .home-btn { transition: none; } html { scroll-behavior: auto; } .deck.live:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .deck, .deck::before, .deck .go, .deck .go b, .home-btn, .repo-card { transition: none; } html { scroll-behavior: auto; } .deck.live:hover { transform: none; } }

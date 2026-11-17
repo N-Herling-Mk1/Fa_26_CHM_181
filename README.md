@@ -1,5 +1,16 @@
 # CHEM 181 Study Hub
 
+<p align="center">
+  <a href="https://n-herling-mk1.github.io/Fa_26_CHM_181/" target="_blank" rel="noopener">
+    <img src="assets/img/site-preview.png" alt="CHEM 181 Study Hub: top nav with Home button, and four columns of deck quizzes, slide decks, practice exams and assignments" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://n-herling-mk1.github.io/Fa_26_CHM_181/" target="_blank" rel="noopener"><b>▶ Open the live site ↗</b></a>
+  &nbsp;·&nbsp; https://n-herling-mk1.github.io/Fa_26_CHM_181/
+</p>
+
 Static study site for CHEM 181 (General Chemistry I): a navigation page, the lecture slide decks, and one page per quiz. Plain HTML, CSS and JavaScript, no build step. It works when opened straight from disk (`file://`) or served with GitHub Pages.
 
 ## Layout
@@ -7,7 +18,8 @@ Static study site for CHEM 181 (General Chemistry I): a navigation page, the lec
 ```
 index.html                         hub: top nav + four columns (deck quizzes | slide decks | practice exams | assignments);
                                    edit DECKS / EXAMS / OTHERS here, slide decks in assets/js/slides.js
-assets/img/                        tab icon: favicon-32.png, favicon.ico (16/32/48), apple-touch-icon.png, icon-512.png
+assets/img/                        tab icon: favicon-32.png, favicon.ico (16/32/48), apple-touch-icon.png, icon-512.png;
+                                   site-preview.png (README screenshot)
 assets/vendor/fonts/               Orbitron + Share Tech Mono (self-hosted, SIL OFL) for the hub's TRON Ares light style
 assets/
   css/hub.css                      navigation page styles
