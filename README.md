@@ -39,6 +39,10 @@ quizzes/
     index.html                     quiz page
     data.js                        56 questions (47 from the Ch. 8 lecture deck + 9 added), keys, explanations
     img/                           figures and option images cropped from the deck, plus reference tables
+  quiz03-ch09-molecular-geometry/
+    index.html                     quiz page
+    data.js                        54 questions from the Ch. 9 lecture deck, keys, explanations
+    img/                           figures and option images cropped from the deck
   exam03-mt3-f23/
     index.html                     practice exam page
     data.js                        Mid-term #3 (Fall 2023, form D): 29 questions with the key

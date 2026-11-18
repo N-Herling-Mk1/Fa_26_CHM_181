@@ -40,7 +40,7 @@ window.SLIDE_DECKS = [
   },
   {
     key: "ch09", chapter: "Ch. 9", title: "Molecular Geometry and Bonding Theories", file: "181.9_Ch_9_2026",
-    slides: 97, hidden: 19, pdfMB: 3.1, pptxMB: 14.3, quiz: null,
+    slides: 97, hidden: 19, pdfMB: 3.1, pptxMB: 14.3, quiz: "quizzes/quiz03-ch09-molecular-geometry/index.html",
     topics: ["VSEPR", "Molecular geometries", "Polarity", "Valence bond theory", "Hybrid orbitals", "σ / π bonds", "MO theory"],
   },
 ];
