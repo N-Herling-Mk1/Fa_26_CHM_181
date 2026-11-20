@@ -29,7 +29,8 @@ assets/
   vendor/katex/                    KaTeX 0.16 + mhchem + auto-render, bundled for offline use (MIT)
 slides/
   viewer.html                      slide viewer: viewer.html?d=ch06 shows that deck's PDF, with deck picker, Open PDF, .pptx download
-  decks/                           181.N_Ch_N_2026.pptx (original) + .pdf (LibreOffice render, hidden slides included)
+  decks/                           181.N_Ch_N_2026.pptx (original) + .pdf (LibreOffice render, hidden slides included);
+                                   Ch. 10 and Ch. 11 are the 2025 decks (181.10_Ch_10_2025, 181.11_Ch_11_2025)
 quizzes/
   quiz01-lewis-structures/
     index.html                     quiz page
@@ -43,6 +44,14 @@ quizzes/
     index.html                     quiz page
     data.js                        54 questions from the Ch. 9 lecture deck, keys, explanations
     img/                           figures and option images cropped from the deck
+  quiz04-ch10-gases/
+    index.html                     quiz page
+    data.js                        56 questions from the Ch. 10 lecture deck (21 hidden slides included), keys, explanations
+    img/                           figures cropped from the deck (barometer, piston, bulbs, speed distributions)
+  quiz05-ch11-liquids-solids/
+    index.html                     quiz page
+    data.js                        38 questions from the Ch. 11 lecture deck (16 hidden slides included), keys, explanations
+    img/                           figures cropped from the deck (heating curve, vapor-pressure curves, phase diagrams)
   exam03-mt3-f23/
     index.html                     practice exam page
     data.js                        Mid-term #3 (Fall 2023, form D): 29 questions with the key
@@ -66,6 +75,7 @@ hw/
 ## Navigation
 
 - Every page has a large **Home** button at the left of its top bar; the hub's top nav also jumps to each column.
+- Deck-quiz and homework cards have a **Slides →** link to that chapter's deck; slide cards link back with **Deck quiz →**.
 - Every hub card has a **↗** button that opens it in a new tab (the card itself opens in the same tab). Slide cards add **PDF** (new tab) and **.pptx ⤓** (download).
 
 ## Adding a slide deck

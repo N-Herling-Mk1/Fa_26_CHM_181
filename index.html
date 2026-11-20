@@ -124,13 +124,25 @@
         chapter: "Ch. 8", title: "Introduction to Chemical Bonding",
         topics: ["Bond energetics", "Lewis symbols & octet", "Ion configurations", "Born–Haber", "Polarity", "Formal charge", "Bond enthalpies", "Resonance"],
         meta: "56 questions · 89-slide deck", id: "chem181-quiz02-ch08-bonding", total: 56,
-        href: "quizzes/quiz02-ch08-chemical-bonding/index.html",
+        href: "quizzes/quiz02-ch08-chemical-bonding/index.html", slides: "ch08",
       },
       {
         chapter: "Ch. 9", title: "Molecular Geometry and Bonding Theories",
         topics: ["VSEPR", "Bond angles", "Expanded octets", "Polarity", "Hybrid orbitals", "σ / π bonds", "MO theory", "Magnetism"],
         meta: "54 questions · 97-slide deck", id: "chem181-quiz03-ch09-geometry", total: 54,
-        href: "quizzes/quiz03-ch09-molecular-geometry/index.html",
+        href: "quizzes/quiz03-ch09-molecular-geometry/index.html", slides: "ch09",
+      },
+      {
+        chapter: "Ch. 10", title: "Gases",
+        topics: ["Pressure", "Gas laws", "STP", "Ideal gas law", "Dalton", "KMT & speeds", "Effusion", "van der Waals"],
+        meta: "56 questions · 69-slide deck", id: "chem181-quiz04-ch10-gases", total: 56,
+        href: "quizzes/quiz04-ch10-gases/index.html", slides: "ch10",
+      },
+      {
+        chapter: "Ch. 11", title: "Liquids, Solids, and Intermolecular Forces",
+        topics: ["Dispersion", "Dipole–dipole", "H-bonding", "Ion–dipole", "Heating curves", "Calorimetry", "Vapor pressure", "Phase diagrams"],
+        meta: "38 questions · 62-slide deck", id: "chem181-quiz05-ch11-liquids-solids", total: 38,
+        href: "quizzes/quiz05-ch11-liquids-solids/index.html", slides: "ch11",
       },
     ];
     const EXAMS = [
@@ -150,13 +162,13 @@
       },
     ];
     /* Homework sets (hw/). total = answerable parts only; pending parts are not counted.
-       pending / unlock are shown on the card. */
+       slides: key of the chapter's deck in assets/js/slides.js (adds a "Slides →" link to the card). */
     const HW = [
       {
         chapter: "Ch. 10", title: "Gases", verb: "Start HW",
         topics: ["Pressure units", "Boyle / Charles", "Ideal gas law", "Gas stoichiometry", "Dalton", "Kinetic-molecular theory", "van der Waals"],
         meta: "36 problems · 49 parts · 3 pending · 3 ★ unlock", id: "chem181-hw-ch10-gases", total: 49,
-        href: "hw/hw-ch10-gases/index.html",
+        href: "hw/hw-ch10-gases/index.html", slides: "ch10",
       },
     ];
     const SLIDES = window.SLIDE_DECKS || [];
@@ -186,7 +198,7 @@
         const done = live ? progress(d.id, d.total) : null;
         const pct = done ? Math.round((100 * done) / d.total) : 0;
         card.innerHTML = `
-          <span class="chap">${d.chapter}</span>
+          <span class="chap-row"><span class="chap">${d.chapter}</span>${d.slides ? `<a class="dl quiz to-slides" href="slides/viewer.html?d=${d.slides}" title="Open this chapter's lecture slides">Slides →</a>` : ""}</span>
           <span class="title">${d.title}</span>
           <span class="topics">${d.topics.map((t) => `<span>${t}</span>`).join("")}</span>
           <span class="meta">${live ? d.meta : "Coming soon"}</span>

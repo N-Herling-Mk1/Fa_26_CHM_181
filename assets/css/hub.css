@@ -128,6 +128,8 @@ section[data-accent="green"] { --acc: var(--green); --acc-ink: var(--green-ink);
 .deck .chap-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .deck .dl.quiz { color: var(--cyan-ink); min-height: 26px; padding: 2px 8px; font-size: 12.5px; }
 .deck .dl.quiz:hover, .deck .dl.quiz:focus-visible { border-color: var(--cyan); background: color-mix(in srgb, var(--cyan) 10%, white); }
+.deck .dl.quiz.to-slides { color: var(--violet-ink); }
+.deck .dl.quiz.to-slides:hover, .deck .dl.quiz.to-slides:focus-visible { border-color: var(--violet); background: color-mix(in srgb, var(--violet) 10%, white); }
 .deck .go {
   display: inline-flex; align-items: center; gap: 6px; min-height: 36px; text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--acc-ink); border: 1px solid var(--acc); padding: 8px 14px; background: transparent; transition: background .15s, color .15s, box-shadow .15s;

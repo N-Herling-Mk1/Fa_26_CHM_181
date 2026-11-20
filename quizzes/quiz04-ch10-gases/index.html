@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz 4 — Ch. 10: Gases · CHEM 181</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../../assets/img/favicon-32.png">
+  <link rel="icon" href="../../assets/img/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/quiz.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="home-btn" href="../../index.html" title="Back to the study hub"><span aria-hidden="true">⌂</span> Home</a>
+    <a class="btn" href="../../slides/viewer.html?d=ch10" target="_blank" rel="noopener" title="Open the Ch. 10 slides in a new tab">Ch. 10 slides ↗</a>
+    <h1 id="quiz-title">Quiz</h1>
+    <div class="progress" aria-label="Progress">
+      <div class="bar"><span id="prog-bar"></span></div>
+      <span id="prog-text">0 answered</span>
+    </div>
+    <div class="spacer"></div>
+    <span class="scorebox" id="scorebox" aria-live="polite">Not graded</span>
+    <button class="btn primary" id="btn-grade" type="button">Grade all</button>
+    <button class="btn" id="btn-reset" type="button">Reset</button>
+    <button class="btn panel-toggle" id="btn-panel" type="button">Explanations</button>
+  </header>
+
+  <main class="layout">
+    <section class="quiz" id="quiz" aria-label="Questions"></section>
+
+    <aside class="panel" id="panel" aria-label="Explanations">
+      <div class="panel-head">
+        <div class="row">
+          <h3>Explanations</h3>
+          <button class="btn small panel-toggle" id="btn-close-panel" type="button">Close</button>
+        </div>
+        <div class="qmap" id="qmap" aria-label="Question map"></div>
+        <div class="legend">
+          <span><i style="background:#fff"></i>unanswered</span>
+          <span><i style="background:#eef3f8"></i>answered</span>
+          <span><i style="background:#e9f6ec"></i>correct</span>
+          <span><i style="background:#fff6e0"></i>partial</span>
+          <span><i style="background:#fdeceb"></i>incorrect</span>
+        </div>
+      </div>
+      <div class="panel-body" id="panel-body" aria-live="polite"></div>
+    </aside>
+  </main>
+
+  <script src="../../assets/vendor/katex/katex.min.js"></script>
+  <script src="../../assets/vendor/katex/contrib/mhchem.min.js"></script>
+  <script src="../../assets/vendor/katex/contrib/auto-render.min.js"></script>
+  <script src="data.js"></script>
+  <script src="../../assets/js/quiz-engine.js"></script>
+</body>
+</html>

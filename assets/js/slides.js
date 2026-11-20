@@ -43,4 +43,14 @@ window.SLIDE_DECKS = [
     slides: 97, hidden: 19, pdfMB: 3.1, pptxMB: 14.3, quiz: "quizzes/quiz03-ch09-molecular-geometry/index.html",
     topics: ["VSEPR", "Molecular geometries", "Polarity", "Valence bond theory", "Hybrid orbitals", "σ / π bonds", "MO theory"],
   },
+  {
+    key: "ch10", chapter: "Ch. 10", title: "Gases", file: "181.10_Ch_10_2025",
+    slides: 69, hidden: 21, pdfMB: 3.2, pptxMB: 6.1, quiz: "quizzes/quiz04-ch10-gases/index.html",
+    topics: ["Pressure", "Boyle / Charles / Avogadro", "STP", "Ideal gas law", "Gas density", "Dalton", "Kinetic-molecular theory", "Effusion", "Real gases"],
+  },
+  {
+    key: "ch11", chapter: "Ch. 11", title: "Liquids, Solids, and Intermolecular Forces", file: "181.11_Ch_11_2025",
+    slides: 62, hidden: 16, pdfMB: 2.6, pptxMB: 7.2, quiz: "quizzes/quiz05-ch11-liquids-solids/index.html",
+    topics: ["Dispersion", "Dipole–dipole", "Hydrogen bonding", "Ion–dipole", "Heating curves", "Calorimetry", "Vapor pressure", "Phase diagrams"],
+  },
 ];
