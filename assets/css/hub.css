@@ -1,6 +1,6 @@
 /* CHEM 181 Study Hub — TRON Ares light.
    Pale grid field, Orbitron display type, Share Tech Mono readouts, one accent per section:
-   cyan = deck quizzes, violet = slide decks, Ares red-orange = practice exams, amber = assignments.
+   cyan = deck quizzes, violet = slide decks, Ares red-orange = practice exams, amber = assignments, green = homework.
    Accent text uses the darker "-ink" shade so small text keeps >= 4.5:1 contrast on white. */
 /* Fonts are self-hosted (SIL OFL 1.1, licenses in assets/vendor/fonts/) so the hub works offline. */
 @font-face { font-family: "Orbitron"; font-weight: 500; font-style: normal; font-display: swap; src: url("../vendor/fonts/orbitron-latin-500-normal.woff2") format("woff2"); }
@@ -14,6 +14,7 @@
   --ares: #e8230a; --ares-ink: #b81b06;
   --amber: #f2a100; --amber-ink: #8f5a00;
   --violet: #8a3ffc; --violet-ink: #5b1fbf;
+  --green: #00c46a; --green-ink: #00703c;
   --display: "Orbitron", "Segoe UI", Arial, sans-serif;
   --mono: "Share Tech Mono", "Consolas", "Courier New", monospace;
   --body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -79,9 +80,10 @@ section { margin-bottom: 40px; min-width: 0; --acc: var(--cyan); --acc-ink: var(
 section[data-accent="ares"] { --acc: var(--ares); --acc-ink: var(--ares-ink); }
 section[data-accent="amber"] { --acc: var(--amber); --acc-ink: var(--amber-ink); }
 section[data-accent="violet"] { --acc: var(--violet); --acc-ink: var(--violet-ink); }
+section[data-accent="green"] { --acc: var(--green); --acc-ink: var(--green-ink); }
 
-/* ---------- four columns: quizzes | slides | exams | assignments ---------- */
-.columns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 22px; align-items: start; }
+/* ---------- five columns: quizzes | slides | exams | assignments | homework ---------- */
+.columns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 20px; align-items: start; }
 .sec-head { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--acc); }
 .sec-head .idx { font-family: var(--mono); font-size: 15px; color: var(--acc-ink); }
 .sec-head h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; }
@@ -135,6 +137,7 @@ section[data-accent="violet"] { --acc: var(--violet); --acc-ink: var(--violet-in
 .deck.live:hover::before, .deck.live:focus-within::before { box-shadow: inset 0 0 22px color-mix(in srgb, var(--acc) 14%, transparent); }
 .deck.live:hover .go, .deck.live:focus-within .go { background: var(--acc); color: #fff; box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 55%, transparent); }
 section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] .deck.live:focus-within .go { color: #2b1a00; }
+section[data-accent="green"] .deck.live:hover .go, section[data-accent="green"] .deck.live:focus-within .go { color: #00240f; }
 .deck.live:hover .go b { transform: translateX(3px); }
 .deck.soon { color: var(--muted); cursor: not-allowed; background: #f7fafb; }
 
@@ -142,7 +145,8 @@ section[data-accent="amber"] .deck.live:hover .go, section[data-accent="amber"] 
 .foot { color: var(--muted); font-size: 13px; padding-top: 10px; padding-bottom: 44px; font-family: var(--mono); }
 code { font-family: var(--mono); background: #e6f1f5; padding: 1px 5px; color: var(--ink); }
 
-@media (max-width: 1240px) { .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1400px) { .columns { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1080px) { .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 1000px) { .hero-grid:has(.repo-card) { grid-template-columns: auto 1fr; } .repo-card { grid-column: 1 / -1; justify-self: start; } }
 @media (max-width: 720px) { .columns { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {

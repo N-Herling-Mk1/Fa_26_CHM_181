@@ -195,3 +195,12 @@ details.ref img { display: block; max-width: 100%; height: auto; margin-top: 8px
 .prompt table.data td, .prompt table.data th { border: 1px solid var(--line); padding: 3px 9px; text-align: center; }
 .prompt table.data th { background: #f1f4f7; font-weight: 700; }
 .prompt .eq { display: block; text-align: center; margin: 8px 0; }
+
+/* homework pages (added with hw-ch10): unlock badge, pending parts, problem stems */
+.q-head .unlock { font-size: 12px; font-weight: 700; color: #7a4d00; background: #fff1cc; border: 1px solid #e8c45c; border-radius: 3px; padding: 1px 7px; white-space: nowrap; }
+.q.pending .q-body { opacity: .92; }
+.pending-box { margin: 6px 0 4px; padding: 10px 12px; border: 1px dashed #b9c7d6; border-radius: 4px; background: #f4f7fa; color: var(--ink-2); font-size: 14.5px; }
+.qmap button.pending { background: repeating-linear-gradient(135deg, #fff, #fff 3px, #eef1f4 3px, #eef1f4 6px); color: var(--muted); border-style: dashed; }
+.prompt .stem { display: block; padding: 8px 12px; margin: 0 0 10px; background: #eef7f9; border-left: 3px solid #7fc4d4; border-radius: 0 4px 4px 0; }
+.prompt .part { display: block; font-weight: 700; color: var(--ink-2); font-size: 13px; letter-spacing: .04em; text-transform: uppercase; margin: 2px 0 4px; }
+.opts img { max-width: 100%; height: auto; }

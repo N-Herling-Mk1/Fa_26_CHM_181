@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://n-herling-mk1.github.io/Fa_26_CHM_181/" target="_blank" rel="noopener">
-    <img src="assets/img/site-preview.png" alt="CHEM 181 Study Hub: top nav with Home button, and four columns of deck quizzes, slide decks, practice exams and assignments" width="100%">
+    <img src="assets/img/site-preview.png" alt="CHEM 181 Study Hub: top nav with Home button, and columns of deck quizzes, slide decks, practice exams, assignments and homework" width="100%">
   </a>
 </p>
 
@@ -11,13 +11,13 @@
   &nbsp;·&nbsp; https://n-herling-mk1.github.io/Fa_26_CHM_181/
 </p>
 
-Static study site for CHEM 181 (General Chemistry I): a navigation page, the lecture slide decks, and one page per quiz. Plain HTML, CSS and JavaScript, no build step. It works when opened straight from disk (`file://`) or served with GitHub Pages.
+Static study site for CHEM 181 (General Chemistry I): a navigation page, the lecture slide decks, one page per quiz, and one page per homework set. Plain HTML, CSS and JavaScript, no build step. It works when opened straight from disk (`file://`) or served with GitHub Pages.
 
 ## Layout
 
 ```
-index.html                         hub: top nav + four columns (deck quizzes | slide decks | practice exams | assignments);
-                                   edit DECKS / EXAMS / OTHERS here, slide decks in assets/js/slides.js
+index.html                         hub: top nav + five columns (deck quizzes | slide decks | practice exams | assignments | homework);
+                                   edit DECKS / EXAMS / OTHERS / HW here, slide decks in assets/js/slides.js
 assets/img/                        tab icon: favicon-32.png, favicon.ico (16/32/48), apple-touch-icon.png, icon-512.png;
                                    site-preview.png (README screenshot)
 assets/vendor/fonts/               Orbitron + Share Tech Mono (self-hosted, SIL OFL) for the hub's TRON Ares light style
@@ -47,6 +47,11 @@ quizzes/
     index.html                     practice exam page
     data.js                        Mid-term #3 (Fall 2023, form D): 29 questions with the key
     img/                           exam figures, the exam's information pages, redrawn MO diagram
+hw/
+  hw-ch10-gases/
+    index.html                     homework page (same engine and layout as the quizzes)
+    data.js                        36 problems, 52 parts (49 answered, 3 pending), keys, explanations
+    img/                           figures and option drawings cropped from the homework screenshots
 ```
 
 ## Quiz features
@@ -74,6 +79,17 @@ quizzes/
 1. Copy `quizzes/quiz01-lewis-structures/` to a new folder.
 2. Rewrite `data.js`. Question types are `single`, `multi`, `match` and `numeric` (`answer`, optional `tol`, `unit`; accepts `1.5`, `3/2`, `1 1/2`). The field reference is at the top of `quizzes/quiz02-ch08-chemical-bonding/data.js`. Math goes in `$...$`, and chemical formulas in `\ce{...}`.
 3. Give the quiz a unique `id`, then add an entry to `DECKS` (or `EXAMS`) in the root `index.html` with the same `id`, the question count as `total`, and its `href`. The card shows saved progress from that `id`.
+
+## Adding or finishing a homework set
+
+Homework pages use the quiz engine with a few extra fields (documented at the top of `hw/hw-ch10-gases/data.js`):
+
+- One entry per part, titled `Problem N · Part X`, with `mapLabel` (`"2B"`) for the question map and `src` for the screenshot file.
+- `unlock: true` marks parts from the unlock (`_star`) screenshots with a **★ Unlock** badge.
+- `pending: true` + `pendingNote` shows a part whose answer is not available yet (stem not captured, part still locked). Pending parts are not answerable and are left out of the score and the progress count.
+- `rtol` is a relative tolerance for typed answers (`0.006` for three significant figures, `0.02` for two). Typed answers accept scientific notation (`4.75e4`, `4.75x10^4`).
+
+To finish a pending part, replace `pending` / `pendingNote` with `type`, `answer` (or `options`) and `why`, then raise `total` for that set in `HW` in the root `index.html`. A new set: copy `hw/hw-ch10-gases/`, give it a unique `id`, and append an entry to `HW`.
 
 ## Hosting on GitHub Pages
 

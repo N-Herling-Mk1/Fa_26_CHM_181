@@ -18,6 +18,7 @@
         <a href="#col-slides">Slides</a>
         <a href="#col-exams">Practice exams</a>
         <a href="#col-other">Assignments</a>
+        <a href="#col-hw">Homework</a>
       </span>
       <a class="topnav-repo" href="https://github.com/N-Herling-Mk1/Fa_26_CHM_181" target="_blank" rel="noopener" title="Source repository on GitHub (new tab)">Repo ↗</a>
     </div>
@@ -29,7 +30,7 @@
       <div>
         <p class="kicker">CHEM 181 // Principles of Modern Chemistry // Fall 2026</p>
         <h1>Study Hub</h1>
-        <p class="lede">Lecture slides, one quiz per lecture deck, and past exams. Each deck quiz collects every question the deck asks or proposes (YOUR TURN slides, homework and past-exam examples, hidden slides included), graded on the spot with an explanation for every option. Every card has a <b>↗</b> button that opens it in a new tab.</p>
+        <p class="lede">Lecture slides, one quiz per lecture deck, past exams, and worked homework sets. Each deck quiz collects every question the deck asks or proposes (YOUR TURN slides, homework and past-exam examples, hidden slides included), graded on the spot with an explanation for every option. Every card has a <b>↗</b> button that opens it in a new tab.</p>
         <p class="readout" id="readout" aria-live="polite"></p>
       </div>
       <a class="repo-card" href="https://github.com/N-Herling-Mk1/Fa_26_CHM_181" target="_blank" rel="noopener"
@@ -98,10 +99,19 @@
       </div>
       <div id="others" class="decks"></div>
     </section>
+
+    <section id="col-hw" aria-labelledby="hw-h" data-accent="green">
+      <div class="sec-head">
+        <span class="idx">05 //</span>
+        <h2 id="hw-h">Homework</h2>
+        <p id="hw-count">Homework problems with answers, grouped by problem and part.</p>
+      </div>
+      <div id="hw" class="decks"></div>
+    </section>
   </main>
 
   <footer class="wrap foot">
-    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. To add a quiz, append an entry to <code>DECKS</code>, <code>EXAMS</code> or <code>OTHERS</code> in this file; to add a slide deck, append to <code>assets/js/slides.js</code>.</p>
+    <p>Static site: open <code>index.html</code> locally or serve the repo with GitHub Pages. To add a quiz, append an entry to <code>DECKS</code>, <code>EXAMS</code>, <code>OTHERS</code> or <code>HW</code> in this file; to add a slide deck, append to <code>assets/js/slides.js</code>.</p>
   </footer>
 
   <script src="assets/js/slides.js"></script>
@@ -139,6 +149,16 @@
         href: "quizzes/quiz01-lewis-structures/index.html",
       },
     ];
+    /* Homework sets (hw/). total = answerable parts only; pending parts are not counted.
+       pending / unlock are shown on the card. */
+    const HW = [
+      {
+        chapter: "Ch. 10", title: "Gases", verb: "Start HW",
+        topics: ["Pressure units", "Boyle / Charles", "Ideal gas law", "Gas stoichiometry", "Dalton", "Kinetic-molecular theory", "van der Waals"],
+        meta: "36 problems · 49 parts · 3 pending · 3 ★ unlock", id: "chem181-hw-ch10-gases", total: 49,
+        href: "hw/hw-ch10-gases/index.html",
+      },
+    ];
     const SLIDES = window.SLIDE_DECKS || [];
 
     function progress(id, total) {
@@ -172,7 +192,7 @@
           <span class="meta">${live ? d.meta : "Coming soon"}</span>
           ${done ? `<span class="prog" title="${done} of ${d.total} answered"><i style="width:${pct}%"></i></span><span class="prog-text">${done} / ${d.total} answered</span>` : ""}
           ${live ? `<span class="actions">
-            <a class="go" href="${d.href}">${done ? (done === d.total ? "Review" : "Continue") : "Start quiz"} <b aria-hidden="true">→</b></a>
+            <a class="go" href="${d.href}">${done ? (done === d.total ? "Review" : "Continue") : (d.verb || "Start quiz")} <b aria-hidden="true">→</b></a>
             ${newTab(d.href, d.chapter + " " + d.title)}
           </span>` : ""}`;
         box.appendChild(card);
@@ -205,15 +225,16 @@
     renderSlides(SLIDES, "slides");
     render(EXAMS, "exams");
     render(OTHERS, "others");
+    render(HW, "hw");
     const live = DECKS.filter((d) => d.href).length;
     document.getElementById("deck-count").textContent = `${live} deck${live === 1 ? "" : "s"} live · more added as chapters are covered`;
     const nSlides = SLIDES.reduce((t, d) => t + d.slides, 0);
     document.getElementById("slide-count").textContent = `${SLIDES.length} decks · ${nSlides} slides · view in browser, PDF, or original .pptx`;
-    const all = [...DECKS, ...EXAMS, ...OTHERS].filter((d) => d.href);
+    const all = [...DECKS, ...EXAMS, ...OTHERS, ...HW].filter((d) => d.href);
     const qs = all.reduce((t, d) => t + d.total, 0);
     const answered = all.reduce((t, d) => t + (progress(d.id, d.total) || 0), 0);
     document.getElementById("readout").textContent =
-      `SYS // ${all.length} quizzes online · ${qs} questions · ${answered} answered on this device · ${SLIDES.length} slide decks`;
+      `SYS // ${all.length - HW.length} quizzes + ${HW.length} homework set${HW.length === 1 ? "" : "s"} online · ${qs} questions · ${answered} answered on this device · ${SLIDES.length} slide decks`;
   </script>
 </body>
 </html>

@@ -14,6 +14,9 @@
   };
   const fmt = (x) => (Math.round(x * 100) / 100).toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
   const isPhoto = (q) => !!q.photos;
+  // pending: a question whose answer is not known yet (homework part not worked/unlocked).
+  // It is shown with its prompt but is not answerable, not graded and not counted.
+  const LIVE = QZ.questions.filter((q) => !q.pending);
 
   // ---------------- state (persisted per quiz in localStorage) ----------------
   const KEY = "quiz-state:" + QZ.id;
@@ -29,6 +32,7 @@
     return typeof a === "number" ? a : null;
   };
   const isAnswered = (q) => {
+    if (q.pending) return false;
     const a = answerOf(q);
     if (q.type === "multi") return a.length > 0;
     if (q.type === "match") return q.items.some((_, i) => a[i]);
@@ -36,16 +40,20 @@
     return a !== null;
   };
 
-  // numeric answers: accepts 1.5, -217, +222, 3/2, "1 1/2", unicode minus
+  // numeric answers: accepts 1.5, -217, +222, 3/2, "1 1/2", unicode minus,
+  // and scientific notation 4.75e4, 4.75E4, 4.75x10^4, 4.75×10^-4, 4.75*10^(4)
   function parseNum(str) {
     let t = String(str).trim().replace(/[\u2212\u2013]/g, "-").replace(/,/g, "").replace(/\s*(kJ\/mol|kJ|electrons?|D|Å)\s*$/i, "");
+    t = t.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?$/i, "e$1");
     let m = t.match(/^([+-]?)\s*(\d+)\s+(\d+)\/(\d+)$/);
     if (m) return (m[1] === "-" ? -1 : 1) * (Number(m[2]) + Number(m[3]) / Number(m[4]));
     m = t.match(/^([+-]?\d*\.?\d+)\/(\d*\.?\d+)$/);
     if (m) return Number(m[1]) / Number(m[2]);
     return t !== "" && isFinite(Number(t)) ? Number(t) : NaN;
   }
-  const numOk = (q) => { const x = parseNum(answerOf(q)); return isFinite(x) && Math.abs(x - q.answer) <= (q.tol ?? 1e-9) + 1e-9; };
+  // tol = absolute tolerance; rtol = relative tolerance (e.g. 0.01 = ±1%, for sig-fig answers)
+  const tolOf = (q) => (q.rtol ? q.rtol * Math.abs(q.answer) : (q.tol ?? 1e-9));
+  const numOk = (q) => { const x = parseNum(answerOf(q)); return isFinite(x) && Math.abs(x - q.answer) <= tolOf(q) + 1e-9; };
 
   // ---------------- scoring ----------------
   // multi: right-minus-wrong over all options, floored at 0 (matches the original quiz's scores)
@@ -75,9 +83,10 @@
 
   function renderIntro() {
     const box = el("div", { class: "intro" });
-    box.innerHTML = `<p><strong>${QZ.course}</strong> · ${QZ.questions.length} questions · ${fmt(QZ.questions.filter(q => !q.bonus).reduce((t, q) => t + q.points, 0))} points${QZ.questions.some(q => q.bonus) ? " + bonus" : ""}.</p>
+    const nPend = QZ.questions.length - LIVE.length;
+    box.innerHTML = `<p><strong>${QZ.course}</strong> · ${LIVE.length} ${QZ.unitName || "questions"} · ${fmt(LIVE.filter(q => !q.bonus).reduce((t, q) => t + q.points, 0))} points${LIVE.some(q => q.bonus) ? " + bonus" : ""}${nPend ? ` · ${nPend} pending (answer not available yet, not counted)` : ""}.</p>
       <p>Answer, then press <strong>Check</strong> on any question (or <strong>Grade all</strong>) for immediate grading. The panel explains why each option is right or wrong.</p>
-      <p>${QZ.scoring}</p>${QZ.toolsNote ? `<p>${QZ.toolsNote}</p>` : ""}`;
+      <p>${QZ.scoring}</p>${QZ.toolsNote ? `<p>${QZ.toolsNote}</p>` : ""}${QZ.introNote ? `<p>${QZ.introNote}</p>` : ""}`;
     quizEl.appendChild(box);
   }
 
@@ -85,7 +94,8 @@
     const card = el("section", { class: "q", id: "q" + q.n, "aria-labelledby": "qh" + q.n });
     const title = q.title || `Question ${q.n}`;
     const ptsLabel = `${fmt(q.points)} point${q.points === 1 ? "" : "s"}`;
-    card.innerHTML = `<div class="q-head"><h2 id="qh${q.n}">${title} <span class="pts">(${ptsLabel})</span></h2>${q.src ? `<span class="src">${q.src}</span>` : ""}<span class="status"></span></div>`;
+    card.innerHTML = `<div class="q-head"><h2 id="qh${q.n}">${title} <span class="pts">(${q.pending ? "pending" : ptsLabel})</span></h2>${q.unlock ? `<span class="unlock" title="Unlock part">★ Unlock</span>` : ""}${q.src ? `<span class="src">${q.src}</span>` : ""}<span class="status"></span></div>`;
+    if (q.pending) card.classList.add("pending");
     const body = el("div", { class: "q-body" });
     body.appendChild(el("div", { class: "prompt" }, q.prompt));
     if (q.figure) {
@@ -103,6 +113,15 @@
       body.appendChild(d);
     });
 
+    if (q.pending) {
+      body.appendChild(el("div", { class: "pending-box" }, `<strong>Answer pending.</strong> ${q.pendingNote || "Fill in the answer once this part has been worked."}`));
+      card.appendChild(body);
+      card.addEventListener("click", () => setCurrent(q.n, false));
+      quizEl.appendChild(card);
+      cards[q.n] = card;
+      refresh(q);
+      return;
+    }
     if (q.type === "numeric") {
       const wrap = el("div", { class: "numeric" });
       const inp = el("input", { type: "text", inputmode: "decimal", autocomplete: "off", spellcheck: false, "aria-label": "Answer" });
@@ -176,6 +195,12 @@
 
   function refresh(q) {
     const card = cards[q.n];
+    if (q.pending) {
+      $(".status", card).textContent = "Pending";
+      updateTop();
+      if (state.current === q.n) renderPanel(); else updateMap();
+      return;
+    }
     const a = answerOf(q);
     const graded = !!state.graded[q.n];
     card.classList.toggle("graded", graded);
@@ -224,7 +249,7 @@
   function grade(q) { state.graded[q.n] = true; save(); refresh(q); }
   function ungrade(q) { if (state.graded[q.n]) { delete state.graded[q.n]; } }
   function gradeAll() {
-    QZ.questions.forEach((q) => { state.graded[q.n] = true; });
+    LIVE.forEach((q) => { state.graded[q.n] = true; });
     save(); QZ.questions.forEach(refresh); renderPanel();
   }
   function resetAll() {
@@ -243,7 +268,7 @@
   }
 
   function updateTop() {
-    const qs = QZ.questions;
+    const qs = LIVE;
     const answered = qs.filter(isAnswered).length;
     $("#prog-text").textContent = `${answered} / ${qs.length} answered`;
     $("#prog-bar").style.width = (100 * answered) / qs.length + "%";
@@ -264,7 +289,7 @@
     const map = $("#qmap");
     if (!map.childElementCount) {
       QZ.questions.forEach((q) => {
-        const b = el("button", { type: "button", title: q.title || `Question ${q.n}` }, q.bonus ? "B" : String(q.n));
+        const b = el("button", { type: "button", title: (q.title || `Question ${q.n}`) + (q.pending ? " (pending)" : "") }, q.mapLabel || (q.bonus ? "B" : String(q.n)));
         b.addEventListener("click", () => setCurrent(q.n, true));
         map.appendChild(b);
       });
@@ -272,7 +297,8 @@
     [...map.children].forEach((b, i) => {
       const q = QZ.questions[i];
       b.className = "";
-      if (state.graded[q.n]) b.classList.add(verdict(q));
+      if (q.pending) b.classList.add("pending");
+      else if (state.graded[q.n]) b.classList.add(verdict(q));
       else if (isAnswered(q)) b.classList.add("answered");
       if (state.current === q.n) b.classList.add("current");
     });
@@ -289,13 +315,16 @@
     const graded = !!state.graded[q.n];
     const peek = !!state.peek[q.n];
     let h = `<h4>${q.title || "Question " + q.n}</h4>`;
-    if (!graded && !peek) {
+    if (q.pending) {
+      h += `<div class="panel-empty"><p><strong>Answer pending.</strong> ${q.pendingNote || "Not available yet."}</p></div>`;
+      if (q.note) h += `<div class="note">${q.note}</div>`;
+    } else if (!graded && !peek) {
       h += `<div class="panel-empty"><p>Not checked yet. Check the question to grade it and see why each option is right or wrong, or peek at the explanation without grading.</p>
         <div class="btns"><button class="btn small primary" data-act="check">Check this question</button><button class="btn small" data-act="peek">Peek</button></div></div>`;
     } else {
       const a = answerOf(q);
       h += graded
-        ? `<div class="sub">Score ${fmt(score(q))} / ${fmt(q.points)}${q.bonus ? " (bonus)" : ""} · ${q.type === "multi" ? "right-minus-wrong per option" : q.type === "match" ? "per item" : q.type === "numeric" ? (q.tol ? `numeric, ±${q.tol} accepted` : "numeric, exact") : "all or nothing"}</div>`
+        ? `<div class="sub">Score ${fmt(score(q))} / ${fmt(q.points)}${q.bonus ? " (bonus)" : ""} · ${q.type === "multi" ? "right-minus-wrong per option" : q.type === "match" ? "per item" : q.type === "numeric" ? (q.rtol ? `numeric, ±${fmt(q.rtol * 100)}% accepted` : q.tol ? `numeric, ±${q.tol} accepted` : "numeric, exact") : "all or nothing"}</div>`
         : `<div class="sub">Peeking: answer key shown, not graded.</div>`;
       if (q.type === "numeric") {
         const ok = numOk(q);
